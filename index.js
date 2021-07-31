@@ -24,8 +24,6 @@ $(document).ready(function () {
     let mouseClick = false;
     let x = 0, y = 0;
     let xDown = 0, yDown = 0;
-    let maxX = $('#img').width();
-    let maxY = $('#img').height();
 
     $('#btnOpenFile').click(function () {
         $('#openFile').trigger('click');
@@ -49,25 +47,21 @@ $(document).ready(function () {
 
     $(window).bind('mousewheel DOMMouseScroll', function (e) {
         if (e.ctrlKey == true) {
-            let scaleOld = $('#canvas').css('zoom')*1 || 1;
+            let scaleOld = $('#canvas').css('zoom') * 1 || 1;
             let scale = scaleOld * 100 || 1;
-           
+
             if (e.originalEvent.wheelDelta / 120 > 0) {
                 scale += 10;
             } else {
                 scale -= 10;
             }
-            // if (scale < 100) scale = 100;
-            // if (scale > 1000) scale = 1000;
             scale /= 100;
             if (context.canvas.width * scale < screen.width - marginLeft) scale = (screen.width - marginLeft) / context.canvas.width;
             if (scale > 5) return;
-            console.log('scale',scale)
+            console.log('scale', scale)
             $('#canvas').css('zoom', scale);
-            console.log('abs',scale - scaleOld)
-            let translateX = $(document).scrollLeft() + context.canvas.width*(scale - scaleOld)/2;
-            let translateY = $(document).scrollTop() + context.canvas.height*(scale - scaleOld)/2;
-            console.log(translateX, translateY)
+            let translateX = $(document).scrollLeft() + context.canvas.width * (scale - scaleOld) / 2;
+            let translateY = $(document).scrollTop() + context.canvas.height * (scale - scaleOld) / 2;
             window.scroll(translateX, translateY);
         }
     });
@@ -101,8 +95,18 @@ $(document).ready(function () {
                     }, 10);
                 }
             }
-
             x = e.pageX - marginLeft;
             y = e.pageY;
-        })
+        });
+    $('#btnSelectArea').click(function () {
+        context.fillStyle = '#f00';
+        context.beginPath();
+        context.moveTo(0, 0);
+        context.lineTo(100, 50);
+        context.lineTo(50, 100);
+        context.lineTo(0, 90);
+        context.closePath();
+        // context.fill();
+        context.stroke()
+    });
 });
