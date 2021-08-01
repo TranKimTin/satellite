@@ -6,11 +6,13 @@ $(document).ready(function () {
     let selectArea = false;
     let listPoint = [];
     let statusMouse;
+    let url;
 
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
 
     function loadImage(src) {
+        url = src;
         let base_image = new Image();
         base_image.src = src;
         base_image.onload = function () {
@@ -25,7 +27,8 @@ $(document).ready(function () {
     }
     loadImage('./test.jpg');
 
-    let mouseClick = false;
+    let mouseLeftClick = false;
+    let mouseRightClick = false;
     let x = 0, y = 0;
     let xDown = 0, yDown = 0;
 
@@ -85,20 +88,31 @@ $(document).ready(function () {
 
         }
     });
-    function toRealCoordinate(x,y){
+    function toRealCoordinate(x, y) {
         let scale = $('#canvas').css('zoom') * 1 || 1;
         console.log('x', x);
         console.log('scale', scale);
-        console.log('x/scale', x/scale)
+        console.log('x/scale', x / scale)
         return {
-            x: x/scale,
-            y: y/scale
+            x: x / scale,
+            y: y / scale
         };
+    }
+    function beginDraw() {
+        context.beginPath();
+        context.fillStyle = '#CE2E2A';
+        context.strokeStyle = '#CE2E2A';
+        context.lineWidth = 8;
     }
     $('#canvas')
         .mousedown((e) => {
+            if (e.which == 1) {
+                mouseLeftClick = true;
+            }
+            else if (e.which == 3) {
+                mouseRightClick = true;
+            }
             statusMouse = 1;
-            mouseClick = true;
             x = e.pageX - marginLeft;
             y = e.pageY - marginTop;
             xDown = x;
@@ -106,33 +120,51 @@ $(document).ready(function () {
             return false;
         })
         .mouseup((e) => {
-            mouseClick = false;
             x = e.pageX - marginLeft;
             y = e.pageY - marginTop;
-            let coodiname = toRealCoordinate(x,y);
+            let coodiname = toRealCoordinate(x, y);
             console.log(coodiname)
-            if (selectArea && statusMouse == 1) {
-                if(listPoint.length > 0){
-                    console.log(listPoint)
-                    context.beginPath();
-                    context.fillStyle = '#CE2E2A';
-                    context.strokeStyle = '#CE2E2A';
-                    context.lineWidth = 5;
-                    let lastX = listPoint[listPoint.length-1].x;
-                    let lastY = listPoint[listPoint.length-1].y;
+            if (selectArea && mouseLeftClick && statusMouse == 1) {
+                if (listPoint.length > 0) {
+                    beginDraw();
+                    let index = listPoint.length - 1;
+                    let lastX = listPoint[index].x;
+                    let lastY = listPoint[index].y;
                     context.moveTo(lastX, lastY);
                     context.lineTo(coodiname.x, coodiname.y);
                     context.stroke();
                 }
                 listPoint.push(coodiname);
             }
+            else if (selectArea && mouseRightClick) {
+                mouseRightClick = false;
+                selectArea = false;
+                if (listPoint.length > 1) {
+                    beginDraw();
+                    let index = listPoint.length - 1;
+                    let lastX = listPoint[index].x;
+                    let lastY = listPoint[index].y;
+                    context.moveTo(lastX, lastY);
+                    context.lineTo(listPoint[0].x, listPoint[0].y);
+                    context.stroke();
+                }
+            }
             statusMouse = 2;
+            if (e.which == 1) {
+                mouseLeftClick = false;
+            }
+            else if (e.which == 3) {
+                mouseRightClick = false;
+            }
         })
-        .mouseout(() => mouseClick = false)
+        .mouseout(() => {
+            mouseLeftClick = false;
+            mouseRightClick = false;
+        })
         .mousemove((e) => {
             // values: e.clientX, e.clientY, e.pageX, e.pageY
             statusMouse = 3;
-            if (mouseClick) {
+            if (mouseLeftClick && mouseLeftClick) {
                 let translateX = xDown + marginLeft - e.clientX;
                 let translateY = yDown + marginTop - e.clientY;
                 if (!this.timeout) {
@@ -151,5 +183,16 @@ $(document).ready(function () {
         if (selectArea) return;
         selectArea = true;
         listPoint = [];
+    });
+
+    $(document).keydown(function (e) {
+        if (e.ctrlKey && (e.key == 'z' || e.key == 'Z')) {
+            loadImage(url);
+        }
+        else if (e.ctrlKey && (e.key == 'y' || e.key == 'Y')) {
+            console.log('redo');
+            let data = context.canvas.toDataURL();
+            console.log(data)
+        }
     });
 });
