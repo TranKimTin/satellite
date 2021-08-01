@@ -15,7 +15,9 @@ body {
     top: 70px !important;
     margin-right: 0px !important;
     margin-left: 0px !important;
-
+    padding-top: 32px !important;
+    /* background-color: #EEEEEE !important; */
+    background-color: #FCFCFC !important;
 }
 
 .logo-VIUP {
@@ -44,7 +46,7 @@ body {
 }
 
 .icon-btn {
-    height: 30px;
+    height: 25px;
     float: left;
     margin: 2px;
 }
@@ -54,13 +56,15 @@ body {
     position: absolute;
     top: 70px;
     margin-left: 0px;
-    place-items:center;  
+    place-items: center;
 }
 
 .break-line {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    margin-left: 10px;
+    /* margin-top: 5px !important; */
+    margin-bottom: 5px;
+    height: 1px;
+    border-top: 1px solid #E4E4E7;
+    width: 100%;
 }
 
 .text-area-height {
@@ -72,8 +76,9 @@ body {
 }
 
 .input-area-height {
-    margin-top: 5px;
-    margin-bottom: 5px;
+    margin-top: 3px;
+    margin-bottom: 10px;
+    /* margin-bottom: 5px; */
     width: 100%;
 }
 
@@ -95,7 +100,21 @@ body {
     cursor: pointer;
 }
 
-.canvas{
+.canvas {
     zoom: 1;
     cursor: pointer;
+}
+
+.btn-feature {
+    border: 1px solid #E4E4E7 !important;
+    box-sizing: border-box;
+    box-shadow: -4px 4px 4px rgba(84, 14, 17, 0.25);
+    border-radius: 8px;
+    background-blend-mode: multiply;
+    padding: 10px !important;
+    flex-direction: row;
+    align-items: center;
+    height: 60px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
 }

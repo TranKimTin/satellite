@@ -33,34 +33,35 @@ app.on('activate', function () {
 })
 
 //Create menu
-const templateMenu = [
-    {
-        label: 'File',
-        submenu: [
-            {
-                label: 'Undo',
-                accelerator: isMac ? 'Cmd+Z' : 'Ctrl+Z',
-                click(){
+// const templateMenu = [
+//     {
+//         label: 'File',
+//         submenu: [
+//             {
+//                 label: 'Undo',
+//                 accelerator: isMac ? 'Cmd+Z' : 'Ctrl+Z',
+//                 click(){
 
-                }
-            },
-            {
-                label: 'Redo',
-                accelerator: isMac ? 'Cmd+Y' : 'Ctrl+Y',
-                click(){
+//                 }
+//             },
+//             {
+//                 label: 'Redo',
+//                 accelerator: isMac ? 'Cmd+Y' : 'Ctrl+Y',
+//                 click(){
                     
-                }
-            },
-            {
-                label: 'Exit',
-                click(){
-                    app.quit();
-                },
-                accelerator: isMac ? 'Cmd+Q' : 'Ctrl+Q'
-            }
-        ]
-    }
-];
-if (isMac) templateMenu.unshift({});
-const menu = Menu.buildFromTemplate(templateMenu);
-Menu.setApplicationMenu(menu);
+//                 }
+//             },
+//             {
+//                 label: 'Exit',
+//                 click(){
+//                     app.quit();
+//                 },
+//                 accelerator: isMac ? 'Cmd+Q' : 'Ctrl+Q'
+//             }
+//         ]
+//     }
+// ];
+// if (isMac) templateMenu.unshift({});
+// const menu = Menu.buildFromTemplate(templateMenu);
+// Menu.setApplicationMenu(menu);
+Menu.setApplicationMenu(null);
