@@ -4,9 +4,14 @@ $(document).ready(function () {
     let marginTop = $("#top-bar").css('height') ? $("#top-bar").css('height').replace('px', '') * 1 : 70;
     let marginLeft = $("#lef-bar").css('width') ? $("#lef-bar").css('width').replace('px', '') * 1 : 300;
     let selectArea = false;
-    let listPoint = [];
-    let statusMouse;
-    let url;
+    let mouseLeftClick = false;
+    let mouseRightClick = false;
+    let x = 0, y = 0;
+    let xDown = 0, yDown = 0;
+    let statusMouse = 0;
+    let url = '';
+    let currentAction = { undo: [], redo: [] };
+    let history = { undo: [], redo: [] };
 
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
@@ -18,7 +23,7 @@ $(document).ready(function () {
         base_image.onload = function () {
             context.canvas.width = this.width;
             context.canvas.height = this.height;
-            console.log(context.canvas.width, context.canvas.height)
+            console.log('width height canvas', context.canvas.width, context.canvas.height)
             context.drawImage(base_image, 0, 0);
             let scale = (screen.width - marginLeft) / context.canvas.width;
             $('#canvas').css('zoom', scale);
@@ -27,10 +32,52 @@ $(document).ready(function () {
     }
     loadImage('./test.jpg');
 
-    let mouseLeftClick = false;
-    let mouseRightClick = false;
-    let x = 0, y = 0;
-    let xDown = 0, yDown = 0;
+    function beginDraw() {
+        context.beginPath();
+        context.fillStyle = '#000000';
+        context.strokeStyle = '#CE2E2A';
+        context.lineWidth = 8;
+    }
+    function stroke() {
+        context.closePath();
+        context.stroke();
+    }
+    function fill() {
+        context.closePath();
+        context.fill();
+        console.log('fill')
+    }
+
+    function reloadImage() {
+        let base_image = new Image();
+        base_image.src = url;
+        base_image.onload = function () {
+            context.drawImage(base_image, 0, 0);
+            for (let actions of history.undo) {
+                beginDraw();
+                context.moveTo(actions.list[0].x, actions.list[0].y);
+                for (let i = 1; i < actions.list.length; i++) {
+                    context.lineTo(actions.list[i].x, actions.list[i].y);
+                }
+                if (actions.type == 'remove') {
+                    fill();
+                }
+                else {
+                    console.log('get selection');
+                    stroke();
+                }
+            }
+            console.log('reload', currentAction.undo)
+            if (currentAction.undo.length > 1) {
+                beginDraw();
+                context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
+                for (let i = 1; i < currentAction.undo.length; i++) {
+                    context.lineTo(currentAction.undo[i].x, currentAction.undo[i].y);
+                }
+                stroke();
+            }
+        }
+    }
 
     $('#btnOpenFile').click(function () {
         $('#openFile').trigger('click');
@@ -90,20 +137,12 @@ $(document).ready(function () {
     });
     function toRealCoordinate(x, y) {
         let scale = $('#canvas').css('zoom') * 1 || 1;
-        console.log('x', x);
-        console.log('scale', scale);
-        console.log('x/scale', x / scale)
         return {
             x: x / scale,
             y: y / scale
         };
     }
-    function beginDraw() {
-        context.beginPath();
-        context.fillStyle = '#CE2E2A';
-        context.strokeStyle = '#CE2E2A';
-        context.lineWidth = 8;
-    }
+
     $('#canvas')
         .mousedown((e) => {
             if (e.which == 1) {
@@ -125,29 +164,28 @@ $(document).ready(function () {
             let coodiname = toRealCoordinate(x, y);
             console.log(coodiname)
             if (selectArea && mouseLeftClick && statusMouse == 1) {
-                if (listPoint.length > 0) {
+                if (currentAction.undo.length > 0) {
                     beginDraw();
-                    let index = listPoint.length - 1;
-                    let lastX = listPoint[index].x;
-                    let lastY = listPoint[index].y;
+                    let index = currentAction.undo.length - 1;
+                    let lastX = currentAction.undo[index].x;
+                    let lastY = currentAction.undo[index].y;
                     context.moveTo(lastX, lastY);
                     context.lineTo(coodiname.x, coodiname.y);
-                    context.stroke();
+                    stroke();
                 }
-                listPoint.push(coodiname);
+                currentAction.undo.push(coodiname);
             }
-            else if (selectArea && mouseRightClick) {
+            else if (selectArea && mouseRightClick && currentAction.undo.length > 2) {
                 mouseRightClick = false;
                 selectArea = false;
-                if (listPoint.length > 1) {
-                    beginDraw();
-                    let index = listPoint.length - 1;
-                    let lastX = listPoint[index].x;
-                    let lastY = listPoint[index].y;
-                    context.moveTo(lastX, lastY);
-                    context.lineTo(listPoint[0].x, listPoint[0].y);
-                    context.stroke();
-                }
+                beginDraw();
+                let index = currentAction.undo.length - 1;
+                let lastX = currentAction.undo[index].x;
+                let lastY = currentAction.undo[index].y;
+                context.moveTo(lastX, lastY);
+                context.lineTo(currentAction.undo[0].x, currentAction.undo[0].y);
+                stroke();
+                currentAction.undo.push({ x: currentAction.undo[0].x, y: currentAction.undo[0].y });
             }
             statusMouse = 2;
             if (e.which == 1) {
@@ -179,20 +217,50 @@ $(document).ready(function () {
             y = e.pageY - marginTop;
         });
     $('#btnSelectArea').click(function () {
-        console.log('selected area', selectArea)
         if (selectArea) return;
+        if (currentAction.undo.length > 0) return;
         selectArea = true;
-        listPoint = [];
+        currentAction.undo = [];
+    });
+
+    function equalCoordinate(a, b) {
+        return a.x == b.x && a.y == b.y;
+    }
+    $('#btnRemoveSelection').click(function () {
+        console.log('remove selection')
+        let len = currentAction.undo.length;
+        if (len > 0 && equalCoordinate(currentAction.undo[0], currentAction.undo[len - 1])) {
+            history.undo.push({
+                list: [...currentAction.undo],
+                type: 'remove'
+            });
+            currentAction.undo = [];
+            currentAction.redo = [];
+            selectArea = false;
+            reloadImage();
+        }
     });
 
     $(document).keydown(function (e) {
         if (e.ctrlKey && (e.key == 'z' || e.key == 'Z')) {
-            loadImage(url);
+            console.log('undo');
+            selectArea = false;
+            if (currentAction.undo.length > 0) {
+                selectArea = true;
+                currentAction.redo.push(currentAction.undo.pop());
+                reloadImage();
+            }else if(history.undo.length > 0){
+                history.redo.push(history.undo.pop());
+                reloadImage();
+            }
         }
         else if (e.ctrlKey && (e.key == 'y' || e.key == 'Y')) {
             console.log('redo');
             let data = context.canvas.toDataURL();
             console.log(data)
+        }
+        else if (e.key == 'Escape') {
+            console.log('ESC');
         }
     });
 });
