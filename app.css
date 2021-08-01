@@ -84,19 +84,19 @@ body {
 
 .zoom-in {
     position: fixed;
-    width: 50px;
-    height: 50px;
-    bottom: 120px;
-    right: 50px;
+    width: 40px;
+    height: 40px;
+    bottom: 100px;
+    right: 40px;
     cursor: pointer;
 }
 
 .zoom-out {
     position: fixed;
-    width: 50px;
-    height: 50px;
-    bottom: 50px;
-    right: 50px;
+    width: 40px;
+    height: 40px;
+    bottom: 40px;
+    right: 40px;
     cursor: pointer;
 }
 

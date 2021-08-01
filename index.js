@@ -17,9 +17,10 @@ $(document).ready(function () {
             context.drawImage(base_image, 0, 0);
             let scale = (screen.width - marginLeft) / context.canvas.width;
             $('#canvas').css('zoom', scale);
+            window.scroll(0, 0);
         }
     }
-    loadImage('./assets/no-image.png');
+    loadImage('./test.jpg');
 
     let mouseClick = false;
     let x = 0, y = 0;
@@ -45,24 +46,40 @@ $(document).ready(function () {
         }
     });
 
+    function zoom(zoomIn) {
+        let scaleOld = $('#canvas').css('zoom') * 1 || 1;
+        let scale = scaleOld * 100 || 1;
+
+        if (zoomIn) {
+            scale += 10;
+        } else {
+            scale -= 10;
+        }
+        scale /= 100;
+        if (context.canvas.width * scale < screen.width - marginLeft) scale = (screen.width - marginLeft) / context.canvas.width;
+        if (scale > 5) return;
+        console.log('scale', scale)
+        $('#canvas').css('zoom', scale);
+        let left = $(document).scrollLeft();
+        let top = $(document).scrollTop();
+        let translateX = left + (left + (screen.width - marginLeft) / 2) / (context.canvas.width * scaleOld) * context.canvas.width * (scale - scaleOld);
+        let translateY = top + (top + (screen.height - marginTop) / 2) / (context.canvas.height * scaleOld) * context.canvas.height * (scale - scaleOld);
+        window.scroll(translateX, translateY);
+    }
+    $('#btnZoomIn').click(function () {
+        zoom(true);
+    });
+    $('#btnZoomOut').click(function () {
+        zoom(false);
+    });
     $(window).bind('mousewheel DOMMouseScroll', function (e) {
         if (e.ctrlKey == true) {
-            let scaleOld = $('#canvas').css('zoom') * 1 || 1;
-            let scale = scaleOld * 100 || 1;
-
             if (e.originalEvent.wheelDelta / 120 > 0) {
-                scale += 10;
+                zoom(true);
             } else {
-                scale -= 10;
+                zoom(false);
             }
-            scale /= 100;
-            if (context.canvas.width * scale < screen.width - marginLeft) scale = (screen.width - marginLeft) / context.canvas.width;
-            if (scale > 5) return;
-            console.log('scale', scale)
-            $('#canvas').css('zoom', scale);
-            let translateX = $(document).scrollLeft() + context.canvas.width * (scale - scaleOld) / 2;
-            let translateY = $(document).scrollTop() + context.canvas.height * (scale - scaleOld) / 2;
-            window.scroll(translateX, translateY);
+
         }
     });
 
@@ -86,7 +103,6 @@ $(document).ready(function () {
             if (mouseClick) {
                 let translateX = xDown + marginLeft - e.clientX;
                 let translateY = yDown - e.clientY;
-                console.log(translateX, translateY)
                 if (!this.timeout) {
                     this.timeout = true;
                     window.scroll(translateX, translateY);
@@ -99,12 +115,14 @@ $(document).ready(function () {
             y = e.pageY;
         });
     $('#btnSelectArea').click(function () {
-        context.fillStyle = '#f00';
+        context.fillStyle = '#000000';
+        context.strokeStyle = "#FF0000";
+        context.lineWidth = 10;
         context.beginPath();
         context.moveTo(0, 0);
-        context.lineTo(100, 50);
-        context.lineTo(50, 100);
-        context.lineTo(0, 90);
+        context.lineTo(500, 500);
+        context.lineTo(1000, 1000);
+        context.lineTo(0, 500);
         context.closePath();
         // context.fill();
         context.stroke()
