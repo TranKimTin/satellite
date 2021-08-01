@@ -3,6 +3,9 @@ $(document).ready(function () {
     let context = canvas.getContext('2d');
     let marginTop = $("#top-bar").css('height') ? $("#top-bar").css('height').replace('px', '') * 1 : 70;
     let marginLeft = $("#lef-bar").css('width') ? $("#lef-bar").css('width').replace('px', '') * 1 : 300;
+    let selectArea = false;
+    let listPoint = [];
+    let statusMouse;
 
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
@@ -82,27 +85,56 @@ $(document).ready(function () {
 
         }
     });
-
-    $('#canvas').
-        mouseup((e) => {
-            mouseClick = false;
-            x = e.pageX - marginLeft;
-            y = e.pageY;
-        })
-        .mouseout(() => mouseClick = false)
+    function toRealCoordinate(x,y){
+        let scale = $('#canvas').css('zoom') * 1 || 1;
+        console.log('x', x);
+        console.log('scale', scale);
+        console.log('x/scale', x/scale)
+        return {
+            x: x/scale,
+            y: y/scale
+        };
+    }
+    $('#canvas')
         .mousedown((e) => {
+            statusMouse = 1;
             mouseClick = true;
             x = e.pageX - marginLeft;
-            y = e.pageY;
+            y = e.pageY - marginTop;
             xDown = x;
             yDown = y;
             return false;
         })
+        .mouseup((e) => {
+            mouseClick = false;
+            x = e.pageX - marginLeft;
+            y = e.pageY - marginTop;
+            let coodiname = toRealCoordinate(x,y);
+            console.log(coodiname)
+            if (selectArea && statusMouse == 1) {
+                if(listPoint.length > 0){
+                    console.log(listPoint)
+                    context.beginPath();
+                    context.fillStyle = '#CE2E2A';
+                    context.strokeStyle = '#CE2E2A';
+                    context.lineWidth = 5;
+                    let lastX = listPoint[listPoint.length-1].x;
+                    let lastY = listPoint[listPoint.length-1].y;
+                    context.moveTo(lastX, lastY);
+                    context.lineTo(coodiname.x, coodiname.y);
+                    context.stroke();
+                }
+                listPoint.push(coodiname);
+            }
+            statusMouse = 2;
+        })
+        .mouseout(() => mouseClick = false)
         .mousemove((e) => {
             // values: e.clientX, e.clientY, e.pageX, e.pageY
+            statusMouse = 3;
             if (mouseClick) {
                 let translateX = xDown + marginLeft - e.clientX;
-                let translateY = yDown - e.clientY;
+                let translateY = yDown + marginTop - e.clientY;
                 if (!this.timeout) {
                     this.timeout = true;
                     window.scroll(translateX, translateY);
@@ -112,19 +144,12 @@ $(document).ready(function () {
                 }
             }
             x = e.pageX - marginLeft;
-            y = e.pageY;
+            y = e.pageY - marginTop;
         });
     $('#btnSelectArea').click(function () {
-        context.fillStyle = '#000000';
-        context.strokeStyle = "#FF0000";
-        context.lineWidth = 10;
-        context.beginPath();
-        context.moveTo(0, 0);
-        context.lineTo(500, 500);
-        context.lineTo(1000, 1000);
-        context.lineTo(0, 500);
-        context.closePath();
-        // context.fill();
-        context.stroke()
+        console.log('selected area', selectArea)
+        if (selectArea) return;
+        selectArea = true;
+        listPoint = [];
     });
 });
