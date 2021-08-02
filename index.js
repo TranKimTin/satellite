@@ -12,10 +12,17 @@ $(document).ready(function () {
     let url = '';
     let currentAction = { undo: [], redo: [] };
     let history = { undo: [], redo: [] };
-
+    let timeoutRelaod = null;
+    // current{
+    //     undo: [{x,y}],
+    //     redo: [{x,y}]
+    // }
+    // history {
+    //     undo: [{list[{x,y}], type='reomve'}],
+    //     redo: [{list[{x,y}], type='get'}]
+    // }
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
-
     function loadImage(src) {
         url = src;
         let base_image = new Image();
@@ -45,13 +52,22 @@ $(document).ready(function () {
     function fill() {
         context.closePath();
         context.fill();
-        console.log('fill')
+    }
+    function clip(base_image) {
+        context.closePath();
+        context.fillStyle = '#000000';
+        context.fillRect(0, 0, context.canvas.width, context.canvas.height);
+        context.save ();
+        context.clip ();
+        context.drawImage (base_image, 0, 0);
+        context.restore ();
     }
 
-    function reloadImage() {
+    function reloadImage(callback = null) {
         let base_image = new Image();
         base_image.src = url;
         base_image.onload = function () {
+            clearTimeout(timeoutRelaod);
             context.drawImage(base_image, 0, 0);
             for (let actions of history.undo) {
                 beginDraw();
@@ -63,17 +79,16 @@ $(document).ready(function () {
                     fill();
                 }
                 else {
-                    console.log('get selection');
-                    stroke();
+                    clip(base_image);
                 }
             }
-            console.log('reload', currentAction.undo)
             if (currentAction.undo.length > 1) {
                 beginDraw();
                 context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
                 for (let i = 1; i < currentAction.undo.length; i++) {
                     context.lineTo(currentAction.undo[i].x, currentAction.undo[i].y);
                 }
+                if (callback && selectArea) callback();
                 stroke();
             }
         }
@@ -142,7 +157,12 @@ $(document).ready(function () {
             y: y / scale
         };
     }
-
+    function selectDone() {
+        mouseRightClick = false;
+        selectArea = false;
+        currentAction.undo.push({ x: currentAction.undo[0].x, y: currentAction.undo[0].y });
+        reloadImage();
+    }
     $('#canvas')
         .mousedown((e) => {
             if (e.which == 1) {
@@ -162,30 +182,16 @@ $(document).ready(function () {
             x = e.pageX - marginLeft;
             y = e.pageY - marginTop;
             let coodiname = toRealCoordinate(x, y);
-            console.log(coodiname)
             if (selectArea && mouseLeftClick && statusMouse == 1) {
-                if (currentAction.undo.length > 0) {
-                    beginDraw();
-                    let index = currentAction.undo.length - 1;
-                    let lastX = currentAction.undo[index].x;
-                    let lastY = currentAction.undo[index].y;
-                    context.moveTo(lastX, lastY);
-                    context.lineTo(coodiname.x, coodiname.y);
-                    stroke();
-                }
                 currentAction.undo.push(coodiname);
+                reloadImage();
             }
-            else if (selectArea && mouseRightClick && currentAction.undo.length > 2) {
-                mouseRightClick = false;
-                selectArea = false;
-                beginDraw();
-                let index = currentAction.undo.length - 1;
-                let lastX = currentAction.undo[index].x;
-                let lastY = currentAction.undo[index].y;
-                context.moveTo(lastX, lastY);
-                context.lineTo(currentAction.undo[0].x, currentAction.undo[0].y);
-                stroke();
-                currentAction.undo.push({ x: currentAction.undo[0].x, y: currentAction.undo[0].y });
+            else if (selectArea && mouseRightClick && currentAction.undo.length >= 2) {
+                history.redo = [];
+                currentAction.redo = [];
+                clearTimeout(timeoutRelaod);
+                currentAction.undo.push(coodiname);
+                selectDone();
             }
             statusMouse = 2;
             if (e.which == 1) {
@@ -215,6 +221,16 @@ $(document).ready(function () {
             }
             x = e.pageX - marginLeft;
             y = e.pageY - marginTop;
+            if (selectArea && currentAction.undo.length > 0) {
+                clearTimeout(timeoutRelaod);
+                timeoutRelaod = setTimeout(() => {
+                    reloadImage(() => {
+                        let currentCoordinate = toRealCoordinate(x, y);
+                        context.lineTo(currentCoordinate.x, currentCoordinate.y);
+                    });
+                }, 5);
+
+            }
         });
     $('#btnSelectArea').click(function () {
         if (selectArea) return;
@@ -226,41 +242,63 @@ $(document).ready(function () {
     function equalCoordinate(a, b) {
         return a.x == b.x && a.y == b.y;
     }
-    $('#btnRemoveSelection').click(function () {
-        console.log('remove selection')
+    function processArea(type) {
         let len = currentAction.undo.length;
         if (len > 0 && equalCoordinate(currentAction.undo[0], currentAction.undo[len - 1])) {
             history.undo.push({
                 list: [...currentAction.undo],
-                type: 'remove'
+                type: type
             });
             currentAction.undo = [];
             currentAction.redo = [];
             selectArea = false;
             reloadImage();
         }
+    }
+    $('#btnRemoveSelection').click(function () {
+        processArea('remove');
     });
+
+    $('#btnTakeSelection').click(function () {
+        processArea('take');
+    });
+
+    function cancel() {
+        selectArea = false;
+        currentAction.undo = [];
+        currentAction.redo = [];
+        reloadImage();
+    }
+    $('#btnCancel').click(cancel);
 
     $(document).keydown(function (e) {
         if (e.ctrlKey && (e.key == 'z' || e.key == 'Z')) {
-            console.log('undo');
             selectArea = false;
             if (currentAction.undo.length > 0) {
                 selectArea = true;
                 currentAction.redo.push(currentAction.undo.pop());
                 reloadImage();
-            }else if(history.undo.length > 0){
+            } else if (history.undo.length > 0) {
                 history.redo.push(history.undo.pop());
                 reloadImage();
             }
         }
         else if (e.ctrlKey && (e.key == 'y' || e.key == 'Y')) {
-            console.log('redo');
-            let data = context.canvas.toDataURL();
-            console.log(data)
+            selectArea = false;
+            if (currentAction.redo.length > 0) {
+                selectArea = true;
+                currentAction.undo.push(currentAction.redo.pop());
+                reloadImage();
+            } else if (history.redo.length > 0) {
+                history.undo.push(history.redo.pop());
+                reloadImage();
+            }
         }
         else if (e.key == 'Escape') {
-            console.log('ESC');
+            cancel();
+        }
+        else if (e.key == 'Enter' && selectArea && currentAction.undo.length > 2) {
+            selectDone();
         }
     });
 });
