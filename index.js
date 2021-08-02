@@ -177,12 +177,13 @@ $(document).ready(function () {
         }
         else if (e.ctrlKey && (e.key == 'y' || e.key == 'Y')) {
             selectArea = false;
-            if (currentAction.redo.length > 0) {
+            if (historyAction.redo.length > 0) {
+                historyAction.undo.push(historyAction.redo.pop());
+                reloadImage();
+            }
+            else if (currentAction.redo.length > 0) {
                 selectArea = true;
                 currentAction.undo.push(currentAction.redo.pop());
-                reloadImage();
-            } else if (historyAction.redo.length > 0) {
-                historyAction.undo.push(historyAction.redo.pop());
                 reloadImage();
             }
         }
