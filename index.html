@@ -5,6 +5,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="function.js"></script>
     <script src="index.js"></script>
 </head>
 
@@ -26,7 +27,7 @@
     <div>
         <div class="row jumbotron text-center fixed-top left-bar" id="left-bar">
             <input type="file" class="custom-file-input display-none" id="openFile" accept=".png, .jpeg, .jpg">
-            <button type="button" class="btn btn-block btn-feature" id="btnOpenFile">
+            <button type="button" class="btn btn-block btn-feature" data-toggle="modal" data-target="#modalOpenFile" id="btnOpenModal">
                 <img src="./assets/icon/open_image.png" class='icon-btn'/>
                 <span>Mở hình ảnh mới</span>
             </button>
@@ -54,17 +55,59 @@
                 <div class="break-line"></div>
                 <img src="./assets/icon/area.png" class='icon-btn' />
                 <span class="text-area-height">Khu vực</span>
-                <input type="text" class="input-area-height " />
+                <input type="text" class="input-area-height" id="area"/>
 
-                <img src="./assets/icon/height.png" class='icon-btn' />
+                <img src="./assets/icon/height.png" class='icon-btn'/>
                 <span class="text-area-height">Độ cao</span>
-                <input type="text" class="input-area-height " />
+                <input type="number" step="1" min="0" value="0" class="input-area-height" id="height"/>
             </div>
         </div>
         <div class="image-main">
             <canvas id="canvas" class="canvas"></canvas>
         </div>
-        <img src="./assets/icon/zoom_in.png" class='icon-btn zoom-in' id="btnZoomIn"/>
-        <img src="./assets/icon/zoom_out.png" class='icon-btn zoom-out' id="btnZoomOut"/>
+        <img src="./assets/icon/zoom_in.png" class='icon-btn zoom-in' id="btnZoomIn" />
+        <img src="./assets/icon/zoom_out.png" class='icon-btn zoom-out' id="btnZoomOut" />
+    </div>
+    <div class="modal fade" id="modalOpenFile" tabindex="-1" role="dialog" aria-labelledby="modalOpenFileLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalOpenFileLabel">Mở hình ảnh mới</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                </div>
+                <div class="modal-body">
+                    <div class='body-modal'>
+                        <div>
+                            <img src="./assets/icon/area.png" class='icon-btn' />
+                            <span class="text-area-height">Khu vực</span>
+                            <input type="text" class="input-modal" id="areaModal"/>
+                        </div>
+                        <div>
+                            <img src="./assets/icon/height.png" class='icon-btn' />
+                            <span class="text-area-height">Độ cao (Đơn vị: m)</span>
+                            <input type="number" step="1" min="0" value="0" class="input-modal" id="heightModal"/>
+                        </div>
+
+                        <div class='nav-image'>
+                            <img src="./assets/icon/open_image.png" class='icon-btn' />
+                            <span class="text-area-height">Hình ảnh</span>
+                        </div>
+                        <div class="nav-open-file" id="btnOpenFile">
+                            <input class="file-path" id="path">
+                            <button class="btn-open-file">
+                                <img src="./assets/icon/download.png" class='icon-btn'/>
+                                Chọn file
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn-open-file" data-dismiss="modal" id="btnStart">Bắt đầu</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
