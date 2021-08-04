@@ -52,7 +52,7 @@ function reloadImage(callback = null) {
                 clip(base_image);
             }
         }
-        if (currentAction.undo.length > 1) {
+        if (currentAction.undo.length > 0) {
             beginDraw();
             context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
             for (let i = 1; i < currentAction.undo.length; i++) {
@@ -67,7 +67,8 @@ function reloadImage(callback = null) {
 function beginDraw() {
     context.beginPath();
     context.fillStyle = '#000000';
-    context.strokeStyle = '#CE2E2A';
+    // context.strokeStyle = '#CE2E2A';
+     context.strokeStyle = '#CE2E2A';
     context.lineWidth = 8;
 }
 

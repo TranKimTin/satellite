@@ -124,10 +124,23 @@ body {
     margin-bottom: 0px !important;
 }
 
+.btn-feature-predic {
+    border: 1px solid #E4E4E7 !important;
+    box-sizing: border-box;
+    box-shadow: -4px 4px 4px rgba(84, 14, 17, 0.25);
+    border-radius: 8px;
+    background-blend-mode: multiply;
+    padding: 10px !important;
+    flex-direction: row;
+    align-items: center;
+    height: 70px;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+}
+
 .body-modal {
     border-radius: 20px;
     margin: 20px;
-    /* zoom: 1.2; */
 }
 
 .file-path {
