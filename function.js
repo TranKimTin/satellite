@@ -13,6 +13,7 @@ var urlSelect = '';
 var currentAction = { undo: [], redo: [] };
 var historyAction = { undo: [], redo: [] };
 var timeoutRelaod = null;
+var API_SERVER = 'http://203.162.10.118:9900';
 
 function loadImage(src) {
     url = src;
@@ -68,7 +69,7 @@ function beginDraw() {
     context.beginPath();
     context.fillStyle = '#000000';
     // context.strokeStyle = '#CE2E2A';
-     context.strokeStyle = '#CE2E2A';
+    context.strokeStyle = '#CE2E2A';
     context.lineWidth = 8;
 }
 
@@ -151,4 +152,31 @@ function cancel() {
     currentAction.undo = [];
     currentAction.redo = [];
     reloadImage();
+}
+
+async function postImage(url, body) {
+    return new Promise((resolve, reject) => {
+        $.ajax({
+            type: "POST",
+            url: url,
+            contentType: 'application/json; charset=utf-8',
+            headers: { 'Access-Control-Allow-Origin': '*' },
+            data: JSON.stringify(body),
+            dataType: "json",
+            success: function (response) { resolve(response); },
+            error: function (err) { reject(err); }
+        });
+    });
+
+    // return fetch(url,
+    //     {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //         },
+    //         mode: 'no-cors',
+    //         body: JSON.stringify(body)
+    //     })
+    //     .then(response => response.json())
+    //     .catch(err => console.log(err));
 }

@@ -195,3 +195,99 @@ body {
 .nav-open-file {
     cursor: pointer !important;
 }
+
+.predic-body {
+    background: #FFFFFF;
+    border-radius: 20px;
+    padding: 40px 30px 40px 30px;
+}
+
+.predic-body .row {
+    padding: 10px;
+    left: 0%;
+    right: 0%;
+    top: 0%;
+    bottom: 82.27%;
+    background: #FFFFFF;
+    border: 1px solid #E4E4E7;
+    box-sizing: border-box;
+    box-shadow: inset 0px -1px 0px #E4E4E7;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    margin-bottom: 1px;
+}
+
+.predic-body .row-header {
+    font-weight: bold;
+    margin-bottom: 3px;
+    font-size: 110%;
+}
+
+.predic-area {
+    width: 100%;
+    height: 20px;
+    left: 49px;
+    top: 63px;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 20px;
+    /* identical to box height, or 111% */
+    display: flex;
+    align-items: center;
+    color: #000000;
+    margin-bottom: 30px;
+}
+
+.break-table {
+    margin-bottom: 30px;
+}
+
+.row-even {
+    background: #F9E8EA !important;
+}
+
+.predic-icon-btn {
+    height: 16px;
+    width:  16px;
+    border-radius: 0px;
+    margin-right: 10px;
+}
+
+.predic-save {
+    float: right;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: 160px;
+    height: 50px;
+    background: #CE2E2A;
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+    margin-right: 20px;
+}
+
+.predic-cancel{
+    float: right;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    width: 160px;
+    height: 50px;
+    background: #6C605F;
+    border-radius: 4px;
+    color: #FFFFFF;
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 20px;
+}

@@ -15,7 +15,8 @@ $(document).ready(function () {
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
 
-    loadImage('./test.jpg');
+    loadImage('./assets/no-image.png');
+    // loadImage('./test.jpg');
 
     $('#btnOpenModal').click(() => {
         console.log('click')
@@ -193,5 +194,18 @@ $(document).ready(function () {
         else if (e.key == 'Enter' && selectArea && currentAction.undo.length > 2) {
             selectDone();
         }
+    });
+
+    $('#btnCancelModalPredic').click(() => {
+        $('#modalPredic').modal('hide');
+    });
+
+    $('#btnPredic').click(() => {
+        $('#modalPredic').modal('show');
+        
+        // let base64 = context.canvas.toDataURL().split(';base64,')[1];
+        // postImage(`${API_SERVER}/satellite`, { image: base64 }).then(respon => {
+        //     console.log(respon);
+        // })
     });
 });

@@ -47,7 +47,7 @@
                 <img src="./assets/icon/remove_selection.png" class='icon-btn'/>
                 <span>Bỏ phần chọn</span> 
             </button>
-            <button type="button" class="btn btn-block btn-feature-predic">
+            <button type="button" class="btn btn-block btn-feature-predic" id="btnPredic" data-toggle="modal">
                 <img src="./assets/icon/predict.png" class='icon-btn'/>
                 <div>Dự báo ngưỡng</div> 
                 <div>mật độ dân cư</div> 
@@ -56,11 +56,11 @@
                 <div class="break-line"></div>
                 <img src="./assets/icon/area.png" class='icon-btn' />
                 <span class="text-area-height">Khu vực</span>
-                <input type="text" class="input-area-height" id="area"/>
+                <input type="text" class="input-area-height" id="area" />
 
-                <img src="./assets/icon/height.png" class='icon-btn'/>
+                <img src="./assets/icon/height.png" class='icon-btn' />
                 <span class="text-area-height">Độ cao</span>
-                <input type="number" step="1" min="0" value="0" class="input-area-height" id="height"/>
+                <input type="number" step="1" min="0" value="0" class="input-area-height" id="height" />
             </div>
         </div>
         <div class="image-main">
@@ -83,12 +83,12 @@
                         <div>
                             <img src="./assets/icon/area.png" class='icon-btn' />
                             <span class="text-area-height">Khu vực</span>
-                            <input type="text" class="input-modal" id="areaModal"/>
+                            <input type="text" class="input-modal" id="areaModal" />
                         </div>
                         <div>
                             <img src="./assets/icon/height.png" class='icon-btn' />
                             <span class="text-area-height">Độ cao (Đơn vị: m)</span>
-                            <input type="number" step="1" min="0" value="0" class="input-modal" id="heightModal"/>
+                            <input type="number" step="1" min="0" value="0" class="input-modal" id="heightModal" />
                         </div>
 
                         <div class='nav-image'>
@@ -107,6 +107,81 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
                     <button type="button" class="btn-open-file" data-dismiss="modal" id="btnStart">Bắt đầu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPredic" tabindex="-1" role="dialog" aria-labelledby="modalPredicLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="predic-body">
+                        <div class="predic-area">Khu vực: <span id="predic-area">Quận Thanh Xuân Hà Nội</span></div>
+
+                        <div class="row row-header">
+                            <div class="col-6">Dự báo mật độ dân cư</div>
+                            <div class="col-3">Đơn vị</div>
+                            <div class="col-3">Kết quả</div>
+                        </div>
+                        <div class="row row-even">
+                            <div class="col-6">Diện tích khu vực</div>
+                            <div class="col-3">m2</div>
+                            <div class="col-3">1000</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">Số lượng nhà</div>
+                            <div class="col-3">nhà</div>
+                            <div class="col-3">100</div>
+                        </div>
+                        <div class="row row-even">
+                            <div class="col-6">Dân số</div>
+                            <div class="col-3">người</div>
+                            <div class="col-3">1234</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">Mật độ dân sô</div>
+                            <div class="col-3">người / m2</div>
+                            <div class="col-3">1.2</div>
+                        </div>
+
+                        <div class="break-table"></div>
+
+                        <div class="row row-header">
+                            <div class="col-9">Các số liệu tham khảo</div>
+                            <div class="col-3">Kết quả</div>
+                        </div>
+                        <div class="row row-even">
+                            <div class="col-9">Mật độ xây dựng</div>
+                            <div class="col-3">80%</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-9">Tỷ lệ cây xanh</div>
+                            <div class="col-3">5%</div>
+                        </div>
+                        <div class="row row-even">
+                            <div class="col-9">Tỷ lệ mặt nước</div>
+                            <div class="col-3">5%</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-9">Tỷ lệ giao thông & diện tích khác</div>
+                            <div class="col-3">10%</div>
+                        </div>
+
+                        <div class="break-table"></div>
+
+                        <div>
+                            <button type="button" class="predic-cancel" id="btnCancelModalPredic">
+                                <img src="./assets/icon/close.png" class="predic-icon-btn"/>
+                                Hủy bỏ
+                            </button>
+                            <button type="button" class="predic-save">
+                                <img src="./assets/icon/download.png" class="predic-icon-btn"/>
+                                Lưu kết quả
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
