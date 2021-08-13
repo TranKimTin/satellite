@@ -117,7 +117,11 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="predic-body">
-                        <div class="predic-area">Khu vực: <span id="predic-area">Quận Thanh Xuân Hà Nội</span></div>
+                        <div class="predic-title">
+                            <div class="predic-area">Khu vực:<span id="predic-name-area">Quận Thanh Xuân Hà Nội</span></div>
+                            <input class="input-density" type="number" min="0.1" step="0.1" value="3.5" id="density"/>
+                            <div class="density">Mật độ:</div>
+                        </div>
 
                         <div class="row row-header">
                             <div class="col-6">Dự báo mật độ dân cư</div>
@@ -127,22 +131,22 @@
                         <div class="row row-even">
                             <div class="col-6">Diện tích khu vực</div>
                             <div class="col-3">m2</div>
-                            <div class="col-3">1000</div>
+                            <div class="col-3" id="predic-area">1000</div>
                         </div>
                         <div class="row">
                             <div class="col-6">Số lượng nhà</div>
                             <div class="col-3">nhà</div>
-                            <div class="col-3">100</div>
+                            <div class="col-3" id="predic-number-house">100</div>
                         </div>
                         <div class="row row-even">
                             <div class="col-6">Dân số</div>
                             <div class="col-3">người</div>
-                            <div class="col-3">1234</div>
+                            <div class="col-3" id="predic-population">1234</div>
                         </div>
                         <div class="row">
                             <div class="col-6">Mật độ dân sô</div>
                             <div class="col-3">người / m2</div>
-                            <div class="col-3">1.2</div>
+                            <div class="col-3" id="predic-density-population">1.2</div>
                         </div>
 
                         <div class="break-table"></div>
@@ -153,19 +157,19 @@
                         </div>
                         <div class="row row-even">
                             <div class="col-9">Mật độ xây dựng</div>
-                            <div class="col-3">80%</div>
+                            <div class="col-3" id="predic-density-building">80%</div>
                         </div>
                         <div class="row">
                             <div class="col-9">Tỷ lệ cây xanh</div>
-                            <div class="col-3">5%</div>
+                            <div class="col-3" id="predic-ratio-tree">5%</div>
                         </div>
                         <div class="row row-even">
                             <div class="col-9">Tỷ lệ mặt nước</div>
-                            <div class="col-3">5%</div>
+                            <div class="col-3" id="predic-ratio-warter">5%</div>
                         </div>
                         <div class="row">
                             <div class="col-9">Tỷ lệ giao thông & diện tích khác</div>
-                            <div class="col-3">10%</div>
+                            <div class="col-3" id="predic-ratio-traffic">10%</div>
                         </div>
 
                         <div class="break-table"></div>
@@ -175,7 +179,7 @@
                                 <img src="./assets/icon/close.png" class="predic-icon-btn"/>
                                 Hủy bỏ
                             </button>
-                            <button type="button" class="predic-save">
+                            <button type="button" class="predic-save" id="btnSavePredic">
                                 <img src="./assets/icon/download.png" class="predic-icon-btn"/>
                                 Lưu kết quả
                             </button>

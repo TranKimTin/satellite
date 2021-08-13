@@ -19,21 +19,19 @@ $(document).ready(function () {
     // loadImage('./test.jpg');
 
     $('#btnOpenModal').click(() => {
-        console.log('click')
         $('#path').val('no-image.png');
         $('#heightModal').val('');
         $('#areaModal').val('');
         urlSelect = './assets/no-image.png';
     });
     $('#btnOpenFile').click(() => {
+        $('#openFile').val('');
         $('#openFile').trigger('click');
     });
     $('#btnStart').click(() => {
-        console.log(urlSelect)
         if (urlSelect.trim() == '') return;
         let area = $('#areaModal').val();
         let height = $('#heightModal').val() * 1 || 0;
-        console.log(height)
         $('#area').val(area);
         $('#height').val(height);
         loadImage(urlSelect);
@@ -196,16 +194,59 @@ $(document).ready(function () {
         }
     });
 
+    $('#btnPredic').click(() => {
+        let loading = '<div class="spinner-border"></div>';
+        let name = $('#area').val();
+
+        $('#predic-name-area').html(name);
+        $('#modalPredic').modal('show');
+        $('#predic-area').html(loading);
+        $('#predic-number-house').html(loading);
+        $('#predic-population').html(loading);
+        $('#predic-density-population').html(loading);
+        $('#predic-density-building').html(loading);
+        $('#predic-ratio-tree').html(loading);
+        $('#predic-ratio-warter').html(loading);
+        $('#predic-ratio-traffic').html(loading);
+    });
+
+    $('#modalPredic').on('shown.bs.modal', () => {
+        let base64 = context.canvas.toDataURL().split(';base64,')[1];
+        postImage(`${API_SERVER}/satellite`, { image: base64 })
+            .then(respon => {
+                console.log(respon);
+                let { S_green = 0, S_house = 0, S_lake = 0, S_none = 0, S_other = 0, S_total = 0, house = -1 } = respon;
+
+                let density = $('#density').val() * 1 || 3.5;
+                let totalArea = S_green + S_house + S_lake + S_none + S_other;
+
+                $('#predic-area').html(S_total);
+                $('#predic-number-house').html(house);
+                $('#predic-population').html(house * density);
+                $('#predic-density-population').html(density);
+                $('#predic-density-building').html((S_house / totalArea * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-tree').html((S_green / totalArea * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-warter').html((S_lake / totalArea * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-traffic').html(((S_none + S_other) / totalArea * 100 || 0).toFixed(2) + '%');
+
+                if(totalArea == 0 || house == -1) alert('Ảnh không hợp lệ!');
+            }).catch(err => {
+                console.error(); (err);
+            });
+    });
+
+    $('#modalPredic').on('hidden.bs.modal', () => {
+        if (request) {
+            console.log('arbort');
+            request.abort();
+            request = null;
+        }
+    });
+
     $('#btnCancelModalPredic').click(() => {
         $('#modalPredic').modal('hide');
     });
-
-    $('#btnPredic').click(() => {
-        $('#modalPredic').modal('show');
-        
-        // let base64 = context.canvas.toDataURL().split(';base64,')[1];
-        // postImage(`${API_SERVER}/satellite`, { image: base64 }).then(respon => {
-        //     console.log(respon);
-        // })
+    $('#btnSavePredic').click(() => {
+        $('#modalPredic').modal('hide');
     });
 });

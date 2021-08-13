@@ -14,6 +14,7 @@ var currentAction = { undo: [], redo: [] };
 var historyAction = { undo: [], redo: [] };
 var timeoutRelaod = null;
 var API_SERVER = 'http://203.162.10.118:9900';
+let request = null;
 
 function loadImage(src) {
     url = src;
@@ -156,7 +157,7 @@ function cancel() {
 
 async function postImage(url, body) {
     return new Promise((resolve, reject) => {
-        $.ajax({
+        request = $.ajax({
             type: "POST",
             url: url,
             contentType: 'application/json; charset=utf-8',

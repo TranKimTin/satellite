@@ -225,21 +225,41 @@ body {
     font-size: 110%;
 }
 
-.predic-area {
+.predic-title{
     width: 100%;
     height: 20px;
-    left: 49px;
-    top: 63px;
     font-family: Inter;
     font-style: normal;
     font-weight: bold;
     font-size: 18px;
     line-height: 20px;
-    /* identical to box height, or 111% */
-    display: flex;
     align-items: center;
     color: #000000;
     margin-bottom: 30px;
+    position: relative;
+    float: left;
+}
+
+.predic-area {
+    position: relative;
+    width: 75%;
+    float: left;
+}
+
+.density {
+    position: relative;
+    float: right;
+    width: 15%;
+    text-align: left;
+    padding-right: 10px;
+}
+
+.input-density{
+    position: relative;
+    float: right;
+    width: 10%;
+    top: -3px;
+    padding-left: 2px;
 }
 
 .break-table {
@@ -252,7 +272,7 @@ body {
 
 .predic-icon-btn {
     height: 16px;
-    width:  16px;
+    width: 16px;
     border-radius: 0px;
     margin-right: 10px;
 }
@@ -275,7 +295,7 @@ body {
     margin-right: 20px;
 }
 
-.predic-cancel{
+.predic-cancel {
     float: right;
     flex-direction: row;
     align-items: center;
@@ -290,4 +310,8 @@ body {
     font-weight: 500;
     font-size: 16px;
     line-height: 20px;
+}
+
+.predic-area > span{
+    margin-left: 5px;
 }
