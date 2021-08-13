@@ -1,5 +1,6 @@
 {
   "name": "test",
+  "productName": "satellite",
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
@@ -10,9 +11,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
   "devDependencies": {
-    "electron-react-devtools": "^0.5.3"
+    "electron-packager": "^15.3.0",
+    "electron-react-devtools": "^0.5.3",
+    "electron" : "1.4.15"
+  },
+  "dependencies": {
+    "electron": "^13.1.9"
   }
 }

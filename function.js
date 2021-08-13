@@ -15,6 +15,7 @@ var historyAction = { undo: [], redo: [] };
 var timeoutRelaod = null;
 var API_SERVER = 'http://203.162.10.118:9900';
 let request = null;
+let res = {};
 
 function loadImage(src) {
     url = src;

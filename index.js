@@ -211,10 +211,12 @@ $(document).ready(function () {
     });
 
     $('#modalPredic').on('shown.bs.modal', () => {
+        res = {};
         let base64 = context.canvas.toDataURL().split(';base64,')[1];
         postImage(`${API_SERVER}/satellite`, { image: base64 })
             .then(respon => {
                 console.log(respon);
+                res = respon;
                 let { S_green = 0, S_house = 0, S_lake = 0, S_none = 0, S_other = 0, S_total = 0, house = -1 } = respon;
 
                 let density = $('#density').val() * 1 || 3.5;
@@ -229,13 +231,17 @@ $(document).ready(function () {
                 $('#predic-ratio-warter').html((S_lake / totalArea * 100 || 0).toFixed(2) + '%');
                 $('#predic-ratio-traffic').html(((S_none + S_other) / totalArea * 100 || 0).toFixed(2) + '%');
 
-                if(totalArea == 0 || house == -1) alert('Ảnh không hợp lệ!');
+                if (totalArea == 0 || house == -1) {
+                    alert('Ảnh không hợp lệ!', 'ERROR');
+                    $('#modalPredic').modal('hide');
+                }
             }).catch(err => {
                 console.error(); (err);
             });
     });
 
     $('#modalPredic').on('hidden.bs.modal', () => {
+        res = {};
         if (request) {
             console.log('arbort');
             request.abort();
@@ -248,5 +254,16 @@ $(document).ready(function () {
     });
     $('#btnSavePredic').click(() => {
         $('#modalPredic').modal('hide');
+    });
+
+    $('#density').change(() => {
+        $('#predic-area').html(S_total);
+        $('#predic-number-house').html(house);
+        $('#predic-population').html(house * density);
+        $('#predic-density-population').html(density);
+        $('#predic-density-building').html((S_house / totalArea * 100 || 0).toFixed(2) + '%');
+        $('#predic-ratio-tree').html((S_green / totalArea * 100 || 0).toFixed(2) + '%');
+        $('#predic-ratio-warter').html((S_lake / totalArea * 100 || 0).toFixed(2) + '%');
+        $('#predic-ratio-traffic').html(((S_none + S_other) / totalArea * 100 || 0).toFixed(2) + '%');
     });
 });
