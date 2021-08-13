@@ -156,7 +156,7 @@ function cancel() {
     reloadImage();
 }
 
-async function postImage(url, body) {
+function postImage(url, body) {
     return new Promise((resolve, reject) => {
         request = $.ajax({
             type: "POST",
