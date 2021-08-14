@@ -6,17 +6,16 @@
   "main": "app.js",
   "scripts": {
     "test": "electron --debug = 5858 ./app.js",
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-packager . --overwrite"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "electron": "^13.1.9",
     "electron-packager": "^15.3.0",
-    "electron-react-devtools": "^0.5.3",
-    "electron" : "1.4.15"
-  },
-  "dependencies": {
-    "electron": "^13.1.9"
+    "electron-react-devtools": "^0.5.3"
   }
 }
+  

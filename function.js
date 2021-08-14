@@ -39,6 +39,7 @@ function loadImage(src) {
 function reloadImage(callback = null) {
     let base_image = new Image();
     base_image.src = url;
+    clearTimeout(timeoutRelaod);
     base_image.onload = function () {
         clearTimeout(timeoutRelaod);
         context.drawImage(base_image, 0, 0);
@@ -169,16 +170,17 @@ function postImage(url, body) {
             error: function (err) { reject(err); }
         });
     });
+}
 
-    // return fetch(url,
-    //     {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //         },
-    //         mode: 'no-cors',
-    //         body: JSON.stringify(body)
-    //     })
-    //     .then(response => response.json())
-    //     .catch(err => console.log(err));
+function exportFile(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
 }

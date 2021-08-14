@@ -199,7 +199,7 @@ body {
 .predic-body {
     background: #FFFFFF;
     border-radius: 20px;
-    padding: 40px 30px 40px 30px;
+    padding: 62px 49px 63px 49px;
 }
 
 .predic-body .row {
@@ -249,7 +249,7 @@ body {
 .density {
     position: relative;
     float: right;
-    width: 15%;
+    width: 17%;
     text-align: left;
     padding-right: 10px;
 }
@@ -257,7 +257,7 @@ body {
 .input-density{
     position: relative;
     float: right;
-    width: 10%;
+    width: 7%;
     top: -3px;
     padding-left: 2px;
 }

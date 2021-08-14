@@ -220,23 +220,25 @@ $(document).ready(function () {
                 let { S_green = 0, S_house = 0, S_lake = 0, S_none = 0, S_other = 0, S_total = 0, house = -1 } = respon;
 
                 let density = $('#density').val() * 1 || 3.5;
-                let totalArea = S_green + S_house + S_lake + S_none + S_other;
 
-                $('#predic-area').html(S_total);
+                $('#predic-area').html((S_total / 1000000 || 0).toFixed(2));
+                $('#predic-shouse').html((S_house / 1000000 || 0).toFixed(2));
                 $('#predic-number-house').html(house);
-                $('#predic-population').html(house * density);
-                $('#predic-density-population').html(density);
-                $('#predic-density-building').html((S_house / totalArea * 100 || 0).toFixed(2) + '%');
-                $('#predic-ratio-tree').html((S_green / totalArea * 100 || 0).toFixed(2) + '%');
-                $('#predic-ratio-warter').html((S_lake / totalArea * 100 || 0).toFixed(2) + '%');
-                $('#predic-ratio-traffic').html(((S_none + S_other) / totalArea * 100 || 0).toFixed(2) + '%');
+                $('#predic-population').html(Math.round(house * density));
+                $('#predic-density-population').html(Math.round((Math.round(house * density) * 1000000 / S_total || 0)));
+                $('#predic-density-building').html((S_house / S_total * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-tree').html((S_green / S_total * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-warter').html((S_lake / S_total * 100 || 0).toFixed(2) + '%');
+                $('#predic-ratio-traffic').html(((S_none + S_other) / S_total * 100 || 0).toFixed(2) + '%');
 
-                if (totalArea == 0 || house == -1) {
+                if (S_total == 0 || house == -1) {
                     alert('Ảnh không hợp lệ!', 'ERROR');
                     $('#modalPredic').modal('hide');
                 }
+                request = null;
             }).catch(err => {
-                console.error(); (err);
+                console.error(err);
+                $('#modalPredic').modal('hide');
             });
     });
 
@@ -252,18 +254,35 @@ $(document).ready(function () {
     $('#btnCancelModalPredic').click(() => {
         $('#modalPredic').modal('hide');
     });
+
     $('#btnSavePredic').click(() => {
-        $('#modalPredic').modal('hide');
+        if (!request) {
+            let text = '';
+            text += `Khu vực:\t\t\t\t${$('#area').val() || ''}\n`;
+            text += `Số người / nhà:\t\t\t\t${$('#density').val() * 1 || 3.5}\n`;
+            text += '\n';
+            text += `Diện tích khu vực:\t\t\t${$('#predic-area').text() || ''}\tkm2\n`;
+            text += `Diện tích nhà ở:\t\t\t${$('#predic-shouse').text() || ''}\tnhà\n`;
+            text += `Dân số:\t\t\t\t\t${$('#predic-population').text() || ''}\tngười\n`;
+            text += `Mật độ dân số:\t\t\t\t${$('#predic-density-population').text() || ''}\tngười / km2\n`;
+            text += '\n';
+            text += `Mật độ xây dựng:\t\t\t${$('#predic-density-building').text() || ''}%\n`;
+            text += `Tỷ lệ cây xanh:\t\t\t\t${$('#predic-ratio-tree').text() || ''}%\n`;
+            text += `Tỷ lệ mặt nước:\t\t\t\t${$('#predic-ratio-warter').text() || ''}%\n`;
+            text += `Tỷ lệ giao thông và diện tích khác:\t${$('#predic-ratio-traffic').text() || ''}%`;
+
+            exportFile('data.txt', text);
+        }
+        else {
+            alert('Đang đợi kết quả, vui lòng chờ')
+        }
     });
 
     $('#density').change(() => {
-        $('#predic-area').html(S_total);
-        $('#predic-number-house').html(house);
-        $('#predic-population').html(house * density);
-        $('#predic-density-population').html(density);
-        $('#predic-density-building').html((S_house / totalArea * 100 || 0).toFixed(2) + '%');
-        $('#predic-ratio-tree').html((S_green / totalArea * 100 || 0).toFixed(2) + '%');
-        $('#predic-ratio-warter').html((S_lake / totalArea * 100 || 0).toFixed(2) + '%');
-        $('#predic-ratio-traffic').html(((S_none + S_other) / totalArea * 100 || 0).toFixed(2) + '%');
+        if (request) return;
+        let { S_total = 0, house = -1 } = res;
+        let density = $('#density').val() * 1 || 3.5;
+
+        $('#predic-density-population').html(Math.round((Math.round(house * density) * 1000000 / S_total || 0)));
     });
 });
