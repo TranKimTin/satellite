@@ -8,7 +8,6 @@ var mouseRightClick = false;
 var x = 0, y = 0;
 var xDown = 0, yDown = 0;
 var statusMouse = 0;
-var url = '';
 var urlSelect = '';
 var currentAction = { undo: [], redo: [] };
 var historyAction = { undo: [], redo: [] };
@@ -16,10 +15,9 @@ var timeoutRelaod = null;
 var API_SERVER = 'http://203.162.10.118:9900';
 let request = null;
 let res = {};
-
+let base_image;
 function loadImage(src) {
-    url = src;
-    let base_image = new Image();
+    base_image = new Image();
     base_image.src = src;
     base_image.onload = function () {
         context.canvas.width = this.width;
@@ -37,35 +35,31 @@ function loadImage(src) {
 }
 
 function reloadImage(callback = null) {
-    let base_image = new Image();
-    base_image.src = url;
     clearTimeout(timeoutRelaod);
-    base_image.onload = function () {
-        clearTimeout(timeoutRelaod);
-        context.drawImage(base_image, 0, 0);
-        for (let actions of historyAction.undo) {
-            beginDraw();
-            context.moveTo(actions.list[0].x, actions.list[0].y);
-            for (let i = 1; i < actions.list.length; i++) {
-                context.lineTo(actions.list[i].x, actions.list[i].y);
-            }
-            if (actions.type == 'remove') {
-                fill();
-            }
-            else {
-                clip(base_image);
-            }
+    context.drawImage(base_image, 0, 0);
+    for (let actions of historyAction.undo) {
+        beginDraw();
+        context.moveTo(actions.list[0].x, actions.list[0].y);
+        for (let i = 1; i < actions.list.length; i++) {
+            context.lineTo(actions.list[i].x, actions.list[i].y);
         }
-        if (currentAction.undo.length > 0) {
-            beginDraw();
-            context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
-            for (let i = 1; i < currentAction.undo.length; i++) {
-                context.lineTo(currentAction.undo[i].x, currentAction.undo[i].y);
-            }
-            if (callback && selectArea) callback();
-            stroke();
+        if (actions.type == 'remove') {
+            fill();
+        }
+        else {
+            clip(base_image);
         }
     }
+    if (currentAction.undo.length > 0) {
+        beginDraw();
+        context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
+        for (let i = 1; i < currentAction.undo.length; i++) {
+            context.lineTo(currentAction.undo[i].x, currentAction.undo[i].y);
+        }
+        if (callback && selectArea) callback();
+        stroke();
+    }
+
 }
 
 function beginDraw() {
@@ -176,11 +170,11 @@ function exportFile(filename, text) {
     var element = document.createElement('a');
     element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
     element.setAttribute('download', filename);
-  
+
     element.style.display = 'none';
     document.body.appendChild(element);
-  
+
     element.click();
-  
+
     document.body.removeChild(element);
 }
