@@ -6,11 +6,16 @@ const isMac = process.platform === 'darwin';
 let mainWindow;
 
 function createWindow() {
-    mainWindow = new BrowserWindow({ show: false, width: 1200, height: 800 });
-    // mainWindow.webContents.openDevTools()
+    mainWindow = new BrowserWindow({
+        show: false,
+        width: 1200,
+        height: 800,
+        icon: __dirname + '/assets/icon/ipu.jfif',
+    });
+    mainWindow.webContents.openDevTools()
     mainWindow.maximize();
     mainWindow.loadURL(`file://${__dirname}/index.html`);
-    
+
     mainWindow.on('closed', function () {
         mainWindow = null;
     })
@@ -48,7 +53,7 @@ app.on('activate', function () {
 //                 label: 'Redo',
 //                 accelerator: isMac ? 'Cmd+Y' : 'Ctrl+Y',
 //                 click(){
-                    
+
 //                 }
 //             },
 //             {

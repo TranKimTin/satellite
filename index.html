@@ -1,6 +1,11 @@
 <head>
     <title>Satellite</title>
-    <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+    <script>
+        if (typeof module === 'object') {
+            window.module = module;
+            module = undefined;
+        }
+    </script>
     <link rel="stylesheet" href="./app.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -14,14 +19,15 @@
     <div class="fixed-top top-bar" id="top-bar">
         <div class="row">
             <div class="col-1">
-                <img src="./assets/icon/logo_VIUP.png" alt="Logo VIUP" class="logo-VIUP">
+                <img src="./assets/icon/ipu.jfif" alt="Logo IPU" class="logo-VIUP">
             </div>
             <div class="col-10 text-top-bar">
-                <div>Đề tài NCKH Nghiên cứu mô hình phân phối mật độ dân cư và hình thái đô thị tại các đô thị lớn ở Việt Nam</div>
-                <div>Viện nghiên cứu Quy Hoạch và Thiết Kế Đô Thị Nông Thôn - IPU</div>
+                <div><strong class="highlight-text">Institude for</strong> viện nghiên cứu</div>
+                <div><strong class="highlight-text">Planning and </strong>quy hoạch và thiết kế</div>
+                <div><strong class="highlight-text">Urban rural design</strong> đô thị nông thôn</div>
             </div>
             <div class="col-1">
-                <img src="./assets/icon/logo_boxaydung.png" alt="Logo BXD" class="logo-BXD">
+                <!-- <img src="./assets/icon/logo_boxaydung.png" alt="Logo BXD" class="logo-BXD"> -->
             </div>
         </div>
     </div>
@@ -34,7 +40,7 @@
             </button>
             <button type="button" class="btn btn-block btn-feature" id="btnSelectArea">
                 <img src="./assets/icon/select_area.png" class='icon-btn'/>
-                <span>Chọn vùng ảnh   </span> 
+                <span>Chọn vùng ảnh</span> 
             </button>
             <button type="button" class="btn btn-block btn-feature" id="btnCancel">
                 <img src="./assets/icon/cancel_select.png" class='icon-btn'/>
@@ -120,7 +126,7 @@
                     <div class="predic-body">
                         <div class="predic-title">
                             <div class="predic-area">Khu vực:<span id="predic-name-area">Quận Thanh Xuân Hà Nội</span></div>
-                            <input class="input-density" type="number" min="0.1" step="0.1" value="3.5" id="density"/>
+                            <input class="input-density" type="number" min="0.1" step="0.1" value="3.5" id="density" />
                             <div class="density">Người / nhà:</div>
                         </div>
 
@@ -190,8 +196,26 @@
                                 Lưu kết quả
                             </button>
                         </div>
-
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-population" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Dân số vùng bỏ chọn</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+                </div>
+                <div class="modal-body">
+                    <input id="input-polulation" type="number" class="form form-control" value='0' min="0" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="btnEnterPopulation">Ok</button>
                 </div>
             </div>
         </div>

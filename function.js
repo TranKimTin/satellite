@@ -1,6 +1,6 @@
 var canvas = null;
 var context = null;
-var marginTop = 70;
+var marginTop = 100;
 var marginLeft = 300;
 var selectArea = false;
 var mouseLeftClick = false;
@@ -15,10 +15,23 @@ var timeoutRelaod = null;
 var API_SERVER = 'http://203.162.10.118:9900';
 let request = null;
 let res = {};
-let base_image;
+let base_image = null;
+let flag_image = null;
+let areaChange = null;
+
+// currentAction{
+//     undo: [{x,y}],
+//     redo: [{x,y}]
+// }
+// historyAction {
+//     undo: [{list[{x,y}], type='reomve', d=10}],
+//     redo: [{list[{x,y}], type='take', d=10}]
+// }
 function loadImage(src) {
     base_image = new Image();
+    flag_image = new Image();
     base_image.src = src;
+    flag_image.src = './assets/icon/flag.png';
     base_image.onload = function () {
         context.canvas.width = this.width;
         context.canvas.height = this.height;
@@ -32,9 +45,11 @@ function loadImage(src) {
     currentAction.redo = [];
     historyAction.undo = [];
     historyAction.redo = [];
+    selectArea = null;
+    areaChange = null;
 }
 
-function reloadImage(callback = null) {
+function reloadImage(callback = null, postRequest = false) {
     clearTimeout(timeoutRelaod);
     context.drawImage(base_image, 0, 0);
     for (let actions of historyAction.undo) {
@@ -44,13 +59,17 @@ function reloadImage(callback = null) {
             context.lineTo(actions.list[i].x, actions.list[i].y);
         }
         if (actions.type == 'remove') {
+            if (postRequest) {
+                context.fillStyle = actions.d == 0 ? '#000000' : '#FFFFFF';
+            }
             fill();
+            if (!postRequest) drawFlag(actions);
         }
         else {
             clip(base_image);
         }
     }
-    if (currentAction.undo.length > 0) {
+    if (!postRequest && currentAction.undo.length > 0) {
         beginDraw();
         context.moveTo(currentAction.undo[0].x, currentAction.undo[0].y);
         for (let i = 1; i < currentAction.undo.length; i++) {
@@ -59,7 +78,43 @@ function reloadImage(callback = null) {
         if (callback && selectArea) callback();
         stroke();
     }
+}
 
+function drawFlag(actions) {
+    let { list = 0, d = 0 } = actions;
+    if (!list || list.length == 0) return;
+    if (!flag_image) {
+        flag_image = new Image();
+        flag_image.src = './assets/icon/flag.png';
+        flag_image.onload = function () {
+            drawFlag();
+        }
+    }
+    let { x, y } = getCenterCoordinate(list);
+    let w = Math.min(context.canvas.width / 30, context.canvas.height / 30);
+    x -= w / 2;
+    y -= w;
+
+    context.drawImage(flag_image, x, y, w, w);
+    context.fillStyle = '#FFFFFF';
+    context.font = `${w / 2}px Arial`;
+    context.fillText(d, x, y + w * 1.5);
+}
+
+function getCenterCoordinate(list) {
+    let x = 0, y = 0;
+    if (list && list.length) {
+        let minX = 999999999, maxX = 0, minY = 999999999, maxY = 0;
+        for (let item of list) {
+            minX = Math.min(minX, item.x);
+            minY = Math.min(minY, item.y);
+            maxX = Math.max(maxX, item.x);
+            maxY = Math.max(maxY, item.y);
+        }
+        x = (maxX + minX) / 2;
+        y = (maxY + minY) / 2;
+    }
+    return { x, y };
 }
 
 function beginDraw() {
@@ -131,17 +186,16 @@ function equalCoordinate(a, b) {
 }
 
 function processArea(type) {
-    let len = currentAction.undo.length;
-    if (len > 0 && equalCoordinate(currentAction.undo[0], currentAction.undo[len - 1])) {
-        historyAction.undo.push({
-            list: [...currentAction.undo],
-            type: type
-        });
-        currentAction.undo = [];
-        currentAction.redo = [];
-        selectArea = false;
-        reloadImage();
-    }
+    historyAction.undo.push({
+        list: [...currentAction.undo],
+        type: type,
+        d: 0
+    });
+    currentAction.undo = [];
+    currentAction.redo = [];
+    selectArea = false;
+    reloadImage();
+
 }
 
 function cancel() {

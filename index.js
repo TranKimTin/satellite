@@ -1,17 +1,10 @@
 $(document).ready(function () {
     canvas = document.getElementById('canvas');
     context = canvas.getContext('2d');
-    marginTop = $("#top-bar").css('height') ? $("#top-bar").css('height').replace('px', '') * 1 : 70;
+    marginTop = $("#top-bar").css('height') ? $("#top-bar").css('height').replace('px', '') * 1 : 100;
     marginLeft = $("#lef-bar").css('width') ? $("#lef-bar").css('width').replace('px', '') * 1 : 300;
+    console.log(marginTop)
 
-    // currentAction{
-    //     undo: [{x,y}],
-    //     redo: [{x,y}]
-    // }
-    // historyAction {
-    //     undo: [{list[{x,y}], type='reomve'}],
-    //     redo: [{list[{x,y}], type='get'}]
-    // }
     context.canvas.width = screen.width - marginLeft;
     context.canvas.height = screen.height;
 
@@ -20,7 +13,7 @@ $(document).ready(function () {
 
     $('#btnOpenModal').click(() => {
         $('#path').val('no-image.png');
-        $('#heightModal').val('');
+        $('#heightModal').val(500);
         $('#areaModal').val('');
         urlSelect = './assets/no-image.png';
     });
@@ -104,6 +97,23 @@ $(document).ready(function () {
                 currentAction.undo.push(coodiname);
                 selectDone();
             }
+            else if (!selectArea) {
+                areaChange = null;
+                for (let item of historyAction.undo) {
+                    let center = getCenterCoordinate(item.list);
+                    let w = Math.min(context.canvas.width / 30, context.canvas.height / 30);
+                    center.x -= w / 2;
+                    center.y -= w;
+                    if (coodiname.x - center.x >= 0 && coodiname.x - center.x <= w && coodiname.y - center.y >= 0 && coodiname.y - center.y <= w * 1.5) {
+                        areaChange = item;
+                        break;
+                    }
+                }
+                if (areaChange != null) {
+                    $('#input-polulation').val(areaChange.d || 0);
+                    $('#modal-population').modal('show');
+                }
+            }
             statusMouse = 2;
             if (e.which == 1) {
                 mouseLeftClick = false;
@@ -152,11 +162,21 @@ $(document).ready(function () {
 
 
     $('#btnRemoveSelection').click(() => {
-        processArea('remove');
+        let len = currentAction.undo.length;
+        if (len > 3 && equalCoordinate(currentAction.undo[0], currentAction.undo[len - 1])) {
+            processArea('remove');
+            areaChange = null;
+            $('#input-polulation').val(0);
+            $('#modal-population').modal('show');
+
+        }
     });
 
     $('#btnTakeSelection').click(() => {
-        processArea('take');
+        let len = currentAction.undo.length;
+        if (len > 3 && equalCoordinate(currentAction.undo[0], currentAction.undo[len - 1])) {
+            processArea('take');
+        }
     });
 
 
@@ -201,6 +221,7 @@ $(document).ready(function () {
         $('#predic-name-area').html(name);
         $('#modalPredic').modal('show');
         $('#predic-area').html(loading);
+        $('#predic-shouse').html(loading);
         $('#predic-number-house').html(loading);
         $('#predic-population').html(loading);
         $('#predic-density-population').html(loading);
@@ -212,10 +233,25 @@ $(document).ready(function () {
 
     $('#modalPredic').on('shown.bs.modal', () => {
         res = {};
+        reloadImage(null, true);
+        let altitude = $('#height').val() * 1 || 500;
         let base64 = context.canvas.toDataURL().split(';base64,')[1];
-        postImage(`${API_SERVER}/satellite`, { image: base64 })
+        reloadImage();
+        let population = 0;
+        for (let item of historyAction.undo) {
+            population += item.d * 1;
+        }
+        console.log('altitude', altitude);
+        console.log('population', population);
+        let body = {
+            image: base64,
+            altitude: altitude,
+            population
+        };
+        postImage(`${API_SERVER}/satellite`, body)
             .then(respon => {
-                console.log(respon);
+                console.log({ ...respon });
+                respon.S_house = respon.S_house.split('~')[0] * 1 || 0;
                 res = respon;
                 let { S_green = 0, S_house = 0, S_lake = 0, S_none = 0, S_other = 0, S_total = 0, house = -1 } = respon;
 
@@ -284,5 +320,20 @@ $(document).ready(function () {
         let density = $('#density').val() * 1 || 3.5;
 
         $('#predic-density-population').html(Math.round((Math.round(house * density) * 1000000 / S_total || 0)));
+    });
+
+    $('#btnEnterPopulation').click(() => {
+        console.log(historyAction.undo);
+        if (areaChange == null) {
+            let len = historyAction.undo.length || 0;
+            if (len > 0) {
+                historyAction.undo[len - 1].d = $('#input-polulation').val() * 1 || 0;
+            }
+        }
+        else {
+            areaChange.d = $('#input-polulation').val() * 1 || 0;
+        }
+        $('#modal-population').modal('hide');
+        reloadImage();
     });
 });
